@@ -41,7 +41,7 @@ class UserController extends Controller
             $user->save(); // сохраняем в таблицу
             Auth::login($user); // логинимся
             Storage::disk('local')->put('example.txt', $user); // для тестов
-            return response()->json(Auth::user())
+            return response()->json(['status' => 'success', Auth::user()])
                 ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
     }
@@ -62,8 +62,12 @@ class UserController extends Controller
         }
 
         if ($validator->passes()) {
-            Auth::attempt($arr);
-            return response()->json(Auth::user())
+            if (Auth::attempt($arr)) {
+                return response()->json(['status' => 'success', Auth::user()])
+                    ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            }
+
+            return response()->json(['status' => 'error'])
                 ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
     }
