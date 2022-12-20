@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\RegisterController as UserRegisterController;
+use App\Http\Controllers\Auth\LoginController as UserLoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,5 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::middleware('cors')->post('/user/register', [UserController::class, 'register']);
-Route::middleware('cors')->post('/user/login', [UserController::class, 'login']);
-Route::middleware('cors')->post('/user/logout', [UserController::class, 'logout']);
+Route::middleware('cors')->post('/user/register', [UserRegisterController::class, 'register']);
+Route::middleware('cors')->post('/user/login', [UserLoginController::class, 'login']);
