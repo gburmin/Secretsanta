@@ -13,8 +13,8 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $data = $request->getContent(); // получаем body запроса
-        $arr = json_decode($data, true); // переводим в ассоциативный массив
-        $validator = Validator::make($arr, [
+        $credentials  = json_decode($data, true); // переводим в ассоциативный массив
+        $validator = Validator::make($credentials, [
             'email' => 'required|email',
             'password' => 'required|min:3'
         ], [], []);
@@ -25,14 +25,23 @@ class LoginController extends Controller
         }
 
         if ($validator->passes()) {
-            if (Auth::attempt($arr)) {
-                return response()->json(['status' => 'success', Auth::user()])
-                    ->header('Location', '/')
-                    ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            $token = Auth::attempt($credentials);
+            if (!$token) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized',
+                ], 401);
             }
 
-            return response()->json(['status' => 'error'])
-                ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            $user = Auth::user();
+            return response()->json([
+                'status' => 'success',
+                'user' => $user,
+                'authorisation' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                ]
+            ]);
         }
     }
 }

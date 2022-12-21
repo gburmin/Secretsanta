@@ -14,6 +14,13 @@ use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
+
+
     public function register(Request $request)
     {
         $data = $request->getContent(); // получаем body запроса
@@ -40,10 +47,17 @@ class RegisterController extends Controller
             ]);
             event(new Registered($user));
             $user->save(); // сохраняем в таблицу
-            Auth::login($user); // логинимся
-            Storage::disk('local')->put('example.txt', $user); // для тестов
-            return response()->json(['status' => 'success', Auth::user()])
-                ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            $token = Auth::login($user); // логинимся
+            // Storage::disk('local')->put('example.txt', $token); // для тестов
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User created successfully',
+                'user' => $user,
+                'authorisation' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                ]
+            ]);
         }
     }
 }
