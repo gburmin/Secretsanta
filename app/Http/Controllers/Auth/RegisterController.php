@@ -24,8 +24,8 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $data = $request->getContent(); // получаем body запроса
-        $arr = json_decode($data, true); // переводим в ассоциативный массив
-        $validator = Validator::make($arr, [
+        $credential = json_decode($data, true); // переводим в ассоциативный массив
+        $validator = Validator::make($credential, [
             'name' => 'required|string|max:15',
             'email' => 'required|email|unique:users,email,' . Auth::id(),
             'password' => 'required|min:3'
@@ -33,7 +33,11 @@ class RegisterController extends Controller
 
         // Check validation failure
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ])
+                ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
 
         // Check validation success
@@ -41,9 +45,9 @@ class RegisterController extends Controller
             $user = new User();
 
             $user->fill([
-                'name' => $arr['name'],
-                'email' => $arr['email'],
-                'password' => Hash::make(($arr['password']))
+                'name' => $credential['name'],
+                'email' => $credential['email'],
+                'password' => Hash::make(($credential['password']))
             ]);
             event(new Registered($user));
             $user->save(); // сохраняем в таблицу
@@ -57,7 +61,7 @@ class RegisterController extends Controller
                     'token' => $token,
                     'type' => 'bearer',
                 ]
-            ]);
+            ])->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
     }
 }
