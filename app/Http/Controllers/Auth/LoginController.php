@@ -19,8 +19,12 @@ class LoginController extends Controller
             'password' => 'required|min:3'
         ], [], []);
 
+        // Check validation failure
         if ($validator->fails()) {
-            return response()->json($validator->errors())
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ])
                 ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
 
@@ -30,7 +34,7 @@ class LoginController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Unauthorized',
-                ], 401);
+                ], 401)->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
             }
 
             $user = Auth::user();
@@ -41,7 +45,7 @@ class LoginController extends Controller
                     'token' => $token,
                     'type' => 'bearer',
                 ]
-            ]);
+            ])->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
     }
 }

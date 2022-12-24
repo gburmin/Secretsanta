@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\RegisterController as UserRegisterController;
 use App\Http\Controllers\Auth\LoginController as UserLoginController;
+use App\Http\Controllers\Auth\RestoreController as UserRestoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('cors')->post('/user/register', [UserRegisterController::class, 'register']);
 Route::middleware('cors')->post('/user/login', [UserLoginController::class, 'login']);
+Route::middleware('cors')->post('/user/restore', [UserRestoreController::class, 'restore']);
