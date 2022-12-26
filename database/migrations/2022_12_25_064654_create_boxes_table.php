@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('boxes', function (Blueprint $table) {
             $table->id();
             $table->string('title')->default('Название коробки');
-            $table->text('description')->default('Описание');
+            $table->text('description')->nullable();
             $table->string('cover')->default('');
             $table->boolean('email')->default(false);
             $table->boolean('isPrivate')->default(false);
-            $table->string('cost')->default('');
-            $table->integer('max_people_in_box')->default(40);
+            $table->integer('cost')->nullable();
+            $table->integer('max_people_in_box')->nullable();
             $table->timestamp('draw_starts_at')->nullable();
             $table->foreignId('creator_id');
             $table->foreign('creator_id')->references('id')->on('users');

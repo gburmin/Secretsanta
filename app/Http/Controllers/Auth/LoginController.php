@@ -14,29 +14,12 @@ class LoginController extends Controller
     {
         $data = $request->getContent(); // получаем body запроса
         $credentials  = json_decode($data, true); // переводим в ассоциативный массив
-        $validator = Validator::make($credentials, [
-            'email' => 'required|email',
-            'password' => 'required|min:3'
-        ], [], []);
-
-        // Check validation failure
-        if ($validator->fails()) {
+        $token = Auth::attempt($credentials);
+        if (!$token) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors()
-            ])
-                ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        }
-
-        if ($validator->passes()) {
-            $token = Auth::attempt($credentials);
-            if (!$token) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Unauthorized',
-                ], 401)->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            }
-
+                'message' => 'Unauthorized',
+            ], 401)->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
             $user = Auth::user();
             return response()->json([
                 'status' => 'success',
