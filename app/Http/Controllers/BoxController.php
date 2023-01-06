@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Box;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,15 +30,23 @@ class BoxController extends Controller
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
-    public function join(Request $request)
+    public function join(Request $request, User $user)
     {
         $data = $request->getContent(); // получаем body запроса
         $credentials  = json_decode($data, true); // переводим в ассоциативный массив
-        /*Проверка на уникальную пару значений ид коробки и пользователя
-        Хотя если пользователь не будет вбивать ид, то проверка не нужна, но я уверен, что будет*/
-        if (!DB::table('boxes_with_people')->where('user_id', $credentials['user_id'])->where('box_id',  $credentials['box_id'])->first()) {
+        $user = User::where('email', $credentials['email'])->first();
+        if (!$user) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'такой пользователь не зарегистрирован'
+                ]
+            )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        }
+        /*Проверка на уникальную пару значений ид коробки и пользователя*/
+        if (!DB::table('boxes_with_people')->where('user_id', $user->id)->where('box_id',  $credentials['box_id'])->first()) {
             DB::table('boxes_with_people')->insert([
-                'user_id' => $credentials['user_id'],
+                'user_id' => $user->id,
                 'box_id' => $credentials['box_id']
             ]);
             return response()->json(
