@@ -29,3 +29,4 @@ Route::middleware('cors')->post('/user/restore', [UserRestoreController::class, 
 
 Route::middleware('cors')->post('/box/create', [BoxController::class, 'create']);
 Route::middleware('cors')->post('/box/join', [BoxController::class, 'join']);
+Route::middleware('cors')->post('/box/get', [BoxController::class, 'getBoxes']);
