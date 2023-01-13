@@ -14,7 +14,7 @@ class Box extends Model
         'description',
         'cover',
         'email',
-        'isPrivate',
+        'isPublic',
         'cost',
         'max_people_in_box',
         'draw_starts_at',
