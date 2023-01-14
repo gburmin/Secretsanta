@@ -111,29 +111,15 @@ class BoxController extends Controller
         foreach ($users as $user) {
             $users_id[] = $user->user_id;
         }
-
-
+        $users_id[] = array_shift($users_id);
         foreach ($users as $user) {
-            $secret_santa = DB::table('boxes_with_people')
-                ->select('secret_santa_to_id')
+            DB::table('boxes_with_people')
                 ->where('box_id', $credentials['box_id'])
-                ->where('user_id', $user->user_id)->first();
-            while (is_null($secret_santa->secret_santa_to_id)) {
-                $rand = array_rand($users_id);
-                if ($user->user_id !== $users_id[$rand]) {
-                    DB::table('boxes_with_people')
-                        ->where('box_id', $credentials['box_id'])
-                        ->where('user_id', $user->user_id)
-                        ->update(['secret_santa_to_id' => $users_id[$rand]]);
-
-                    $secret_santa = DB::table('boxes_with_people')
-                        ->select('secret_santa_to_id')
-                        ->where('box_id', $credentials['box_id'])
-                        ->where('user_id', $user->user_id)->first();
-                    unset($users_id[$rand]);
-                }
-            }
+                ->where('user_id', $user->user_id)
+                ->update(['secret_santa_to_id' => array_shift($users_id)]);
         }
+
+
         $secret_santas_ward = DB::table('boxes_with_people')
             ->join('users', 'boxes_with_people.secret_santa_to_id', '=', 'users.id')
             ->select(['users.id', 'name', 'email'])
@@ -142,7 +128,7 @@ class BoxController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'message' => 'жеребьевка проведена',
+                'message' => 'жеребьевка успешно проведена',
                 'secret_santas_ward' => $secret_santas_ward
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
