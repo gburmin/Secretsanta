@@ -29,6 +29,7 @@ Route::middleware('cors')->post('/user/restore', [UserRestoreController::class, 
 
 Route::middleware('cors')->post('/box/create', [BoxController::class, 'create']);
 Route::middleware('cors')->patch('/box/update/{box}', [BoxController::class, 'update']);
+Route::middleware('cors')->delete('/box/delete/{box}', [BoxController::class, 'delete']);
 Route::middleware('cors')->post('/box/join', [BoxController::class, 'join']);
 Route::middleware('cors')->post('/box/get', [BoxController::class, 'getBoxes']);
 Route::middleware('cors')->post('/box/draw', [BoxController::class, 'draw']);

@@ -43,6 +43,17 @@ class BoxController extends Controller
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
+    public function delete(Box $box)
+    {
+        $box->delete();
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'коробка успешно удалена'
+            ]
+        )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
     public function join(Request $request, User $user)
     {
         $data = $request->getContent(); // получаем body запроса
