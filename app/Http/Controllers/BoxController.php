@@ -6,6 +6,9 @@ use App\Models\Box;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Registered;
 
 class BoxController extends Controller
 {
@@ -53,27 +56,44 @@ class BoxController extends Controller
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
-
-    public function join(Request $request, User $user)
+    public function sendInvites(Request $request)
     {
         $data = $request->getContent(); // получаем body запроса
         $credentials  = json_decode($data, true); // переводим в ассоциативный массив
-        $user = User::where('email', $credentials['email'])
-            ->where('name', $credentials['name'])
+        foreach ($credentials['emails'] as $email) {
+            mail($email['email'], 'Приглашение в коробку для участия в тайном санте', 'Уважаемый ' . $email['name'] . '! Вам выслано приглашения для участия в тайном санте. 
+            Чтобы принять приглашение, нажмите на ссылку' . 'https://backsecsanta.alwaysdata.net/api/join?email=' . $email['email'] . '&name=' . $email['name']
+                . '&id=' . $email['id']);
+        }
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'письма отосланы'
+            ]
+        )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
+    public function join(Request $request)
+    {
+        $user = User::where('email', $request->email)
+            ->where('name', $request->name)
             ->first();
         if (!$user) {
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'message' => 'такой пользователь не зарегистрирован'
-                ]
-            )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            $user = new User();
+            $password = Str::random(10);
+            $user->fill([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($password)
+            ]);
+            event(new Registered($user));
+            $user->save();
+            mail($request->email, 'Ваш новый пароль', 'ваш пароль ' . $password);
         }
-        /*Проверка на уникальную пару значений ид коробки и пользователя*/
-        if (!DB::table('boxes_with_people')->where('user_id', $user->id)->where('box_id',  $credentials['box_id'])->first()) {
+        if (!DB::table('boxes_with_people')->where('user_id', $user->id)->where('box_id', $request->id)->first()) {
             DB::table('boxes_with_people')->insert([
                 'user_id' => $user->id,
-                'box_id' => $credentials['box_id']
+                'box_id' => $request->id
             ]);
             return response()->json(
                 [
@@ -82,6 +102,7 @@ class BoxController extends Controller
                 ]
             )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
+
         return response()->json(
             [
                 'status' => 'error',
