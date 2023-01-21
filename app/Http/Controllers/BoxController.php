@@ -62,7 +62,7 @@ class BoxController extends Controller
         $credentials  = json_decode($data, true); // переводим в ассоциативный массив
         foreach ($credentials['emails'] as $email) {
             mail($email['email'], 'Приглашение в коробку для участия в тайном санте', 'Уважаемый ' . $email['name'] . '! Вам выслано приглашения для участия в тайном санте. 
-            Чтобы принять приглашение, нажмите на ссылку' . 'https://backsecsanta.alwaysdata.net/api/join?email=' . $email['email'] . '&name=' . $email['name']
+            Чтобы принять приглашение, нажмите на ссылку' . 'https://backsecsanta.alwaysdata.net/api/box/join?email=' . $email['email'] . '&name=' . $email['name']
                 . '&id=' . $email['id']);
         }
         return response()->json(
@@ -95,12 +95,7 @@ class BoxController extends Controller
                 'user_id' => $user->id,
                 'box_id' => $request->id
             ]);
-            return response()->json(
-                [
-                    'status' => 'success',
-                    'message' => 'вы присоединились к коробке'
-                ]
-            )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            return view('welcome');
         }
 
         return response()->json(

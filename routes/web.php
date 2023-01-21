@@ -13,6 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::middleware('cors')->match(['get', 'post'], '/box/join', [BoxController::class, 'join']);
