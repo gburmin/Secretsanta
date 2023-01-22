@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RestoreController as UserRestoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BoxController;
+use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +37,6 @@ Route::middleware('cors')->post('/box/get', [BoxController::class, 'getBoxes']);
 Route::middleware('cors')->post('/box/draw', [BoxController::class, 'draw']);
 Route::middleware('cors')->post('/box/reverseDraw', [BoxController::class, 'reverseDraw']);
 Route::middleware('cors')->post('/box/info', [BoxController::class, 'info']);
+
+
+Route::middleware('cors')->post('/chat/send', [ChatController::class, 'sendMessage']);

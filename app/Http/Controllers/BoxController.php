@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Box;
 use App\Models\User;
+use App\Models\Card;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,12 @@ class BoxController extends Controller
             'user_id' => $credentials['creator_id'],
             'box_id' => $box->id
         ]);
+        $card = new Card();
+        $card->fill([
+            'user_id' => $credentials['creator_id'],
+            'box_id' => $box->id
+        ]);
+        $card->save();
         return response()->json(
             [
                 'status' => 'success',
@@ -61,9 +68,8 @@ class BoxController extends Controller
         $data = $request->getContent(); // получаем body запроса
         $credentials  = json_decode($data, true); // переводим в ассоциативный массив
         foreach ($credentials['emails'] as $email) {
-            mail($email['email'], 'Приглашение в коробку для участия в тайном санте', 'Уважаемый ' . $email['name'] . '! Вам выслано приглашения для участия в тайном санте. 
-            Чтобы принять приглашение, нажмите на ссылку' . 'https://backsecsanta.alwaysdata.net/api/box/join?email=' . $email['email'] . '&name=' . $email['name']
-                . '&id=' . $email['id']);
+            mail($email['email'], 'Приглашение в коробку для участия в тайном санте', 'Уважаемый ' . $email['name'] . '! Вам выслано приглашения для участия в тайном санте.Чтобы принять приглашение, нажмите на ссылку' . 'https://backsecsanta.alwaysdata.net/api/box/join?email=' . $email['email'] . '&name=' . $email['name']
+                . '&id=' . $email['id'] . '. Если вы не зарегистрированы на нашем сайте, то переход по ссылке создаст вам аккаунт!');
         }
         return response()->json(
             [
@@ -76,7 +82,6 @@ class BoxController extends Controller
     public function join(Request $request)
     {
         $user = User::where('email', $request->email)
-            ->where('name', $request->name)
             ->first();
         if (!$user) {
             $user = new User();
@@ -95,6 +100,12 @@ class BoxController extends Controller
                 'user_id' => $user->id,
                 'box_id' => $request->id
             ]);
+            $card = new Card();
+            $card->fill([
+                'user_id' => $user->id,
+                'box_id' => $request->id
+            ]);
+            $card->save();
             return view('welcome');
         }
 
