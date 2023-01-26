@@ -40,3 +40,4 @@ Route::middleware('cors')->post('/box/info', [BoxController::class, 'info']);
 
 
 Route::middleware('cors')->post('/chat/send', [ChatController::class, 'sendMessage']);
+Route::middleware('cors')->post('/chat/get', [ChatController::class, 'getAllMessages']);
