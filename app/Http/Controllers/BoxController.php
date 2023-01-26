@@ -212,4 +212,24 @@ class BoxController extends Controller
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
+
+    public function othersPublicBoxes(Request $request)
+    {
+        $data = $request->getContent();
+        $credentials = json_decode($data, true);
+        $allOtherBoxes = DB::table('boxes_with_people')
+            ->join('boxes', 'boxes_with_people.box_id', '=', 'boxes.id')
+            ->select('title', 'cover', 'email', 'isPublic', 'cost', 'max_people_in_box', 'draw_starts_at', 'creator_id')
+            ->whereNot('user_id', $credentials['user_id'])
+            ->where('isPublic', true)
+            ->groupBy('box_id')
+            ->get();
+
+        return response()->json(
+            [
+                'status' => 'success',
+                'allOtherBoxes' =>  $allOtherBoxes
+            ]
+        )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
 }
