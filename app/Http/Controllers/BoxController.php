@@ -34,7 +34,8 @@ class BoxController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'box' => $box
+                'box' => $box,
+                'card' => $card
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
@@ -203,12 +204,14 @@ class BoxController extends Controller
             ->where('boxes_with_people.box_id', $credentials['box_id'])
             ->get();
         $box = Box::where('id', $credentials['box_id'])->first();
+        $card = Card::where('box_id', $credentials['box_id'])->where('user_id', $credentials['user_id'])->first();
         return response()->json(
             [
                 'status' => 'success',
                 'box' => $box,
                 'secret_santas' => $secret_santas,
-                'secret_santas_ward' => $secret_santas_ward
+                'secret_santas_ward' => $secret_santas_ward,
+                'card' => $card
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
