@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BoxController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,3 +44,8 @@ Route::middleware('cors')->post('/box/othersPublicBoxes', [BoxController::class,
 
 Route::middleware('cors')->post('/chat/send', [ChatController::class, 'sendMessage']);
 Route::middleware('cors')->post('/chat/get', [ChatController::class, 'getAllMessages']);
+
+Route::middleware('cors')->patch('/user/update/{user}', [ProfileController::class, 'update']);
+Route::middleware('cors')->delete('user/delete/{user}', [ProfileController::class, 'delete']);
+
+Route::middleware('cors')->patch('/card/update', [CardController::class, 'update']);

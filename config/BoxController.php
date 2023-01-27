@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Box;
 use App\Models\User;
 use App\Models\Card;
-use App\Models\CardInfo;
-use App\Models\InvitedUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -27,16 +25,12 @@ class BoxController extends Controller
             'user_id' => $credentials['creator_id'],
             'box_id' => $box->id
         ]);
-        $user = User::find($credentials['creator_id']);
-        $cardInfo = CardInfo::create([
-            'name' => $user->name,
-            'email' => $user->email
-        ]);
-        $card = Card::create([
+        $card = new Card();
+        $card->fill([
             'user_id' => $credentials['creator_id'],
-            'box_id' => $box->id,
-            'card_infos_id' => $cardInfo->id
+            'box_id' => $box->id
         ]);
+        $card->save();
         return response()->json(
             [
                 'status' => 'success',
@@ -75,8 +69,6 @@ class BoxController extends Controller
         $data = $request->getContent(); // получаем body запроса
         $credentials  = json_decode($data, true); // переводим в ассоциативный массив
         foreach ($credentials['emails'] as $email) {
-            $InvitedUser = InvitedUser::create(['name' => $email['name'], 'email' => $email['email']]);
-            DB::table('boxes_with_people')->insert(['invited_user_id' => $InvitedUser->id, 'box_id' => $email['id']]);
             mail($email['email'], 'Приглашение в коробку для участия в тайном санте', 'Уважаемый ' . $email['name'] . '! Вам выслано приглашения для участия в тайном санте.Чтобы принять приглашение, нажмите на ссылку' . 'https://backsecsanta.alwaysdata.net/api/box/join?email=' . $email['email'] . '&name=' . $email['name']
                 . '&id=' . $email['id'] . '. Если вы не зарегистрированы на нашем сайте, то переход по ссылке создаст вам аккаунт!');
         }
@@ -109,16 +101,12 @@ class BoxController extends Controller
                 'user_id' => $user->id,
                 'box_id' => $request->id
             ]);
-            InvitedUser::where('email', $user->email)->delete();
-            $cardInfo = CardInfo::create([
-                'name' => $user->name,
-                'email' => $user->email
-            ]);
-            Card::create([
+            $card = new Card();
+            $card->fill([
                 'user_id' => $user->id,
-                'box_id' => $request->id,
-                'card_infos_id' => $cardInfo->id
+                'box_id' => $request->id
             ]);
+            $card->save();
             return view('welcome');
         }
 
@@ -134,11 +122,7 @@ class BoxController extends Controller
     {
         $data = $request->getContent(); // получаем body запроса
         $credentials  = json_decode($data, true); // переводим в ассоциативный массив
-        $publicBoxes = DB::table('boxes_with_people')
-            ->join('boxes', 'boxes_with_people.box_id', '=', 'boxes.id')
-            ->where('boxes_with_people.user_id', $credentials['id'])
-            ->where('isPublic', true)
-            ->get();
+        $publicBoxes = Box::where('isPublic', true)->get();
         $privateBoxes = DB::table('boxes_with_people')
             ->join('boxes', 'boxes_with_people.box_id', '=', 'boxes.id')
             ->where('boxes_with_people.user_id', $credentials['id'])
@@ -167,16 +151,14 @@ class BoxController extends Controller
             $users_id[] = $user->user_id;
         }
         $users_id[] = array_shift($users_id);
-        DB::table('boxes_with_people')
-            ->where('box_id', $credentials['box_id'])
-            ->whereNotNull('invited_user_id')
-            ->delete();
         foreach ($users as $user) {
             DB::table('boxes_with_people')
                 ->where('box_id', $credentials['box_id'])
                 ->where('user_id', $user->user_id)
                 ->update(['secret_santa_to_id' => array_shift($users_id)]);
         }
+
+
         $secret_santas_ward = DB::table('boxes_with_people')
             ->join('users', 'boxes_with_people.secret_santa_to_id', '=', 'users.id')
             ->select(['users.id', 'name', 'email'])
@@ -240,10 +222,10 @@ class BoxController extends Controller
         $credentials = json_decode($data, true);
         $allOtherBoxes = DB::table('boxes_with_people')
             ->join('boxes', 'boxes_with_people.box_id', '=', 'boxes.id')
-            ->select('boxes.id', 'title', 'cover', 'email', 'isPublic', 'cost', 'max_people_in_box', 'draw_starts_at', 'creator_id')
-            ->whereNot('boxes_with_people.user_id', $credentials['user_id'])
-            ->where('boxes.isPublic', true)
-            ->groupBy('boxes.id', 'title', 'cover', 'email', 'isPublic', 'cost', 'max_people_in_box', 'draw_starts_at', 'creator_id')
+            ->select('title', 'cover', 'email', 'isPublic', 'cost', 'max_people_in_box', 'draw_starts_at', 'creator_id')
+            ->whereNot('user_id', $credentials['user_id'])
+            ->where('isPublic', true)
+            ->groupBy('box_id')
             ->get();
 
         return response()->json(
