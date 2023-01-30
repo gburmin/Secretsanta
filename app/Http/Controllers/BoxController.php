@@ -223,13 +223,17 @@ class BoxController extends Controller
             ->get();
         $box = Box::where('id', $credentials['box_id'])->first();
         $card = Card::where('box_id', $credentials['box_id'])->where('user_id', $credentials['user_id'])->first();
+        $invitedUsers = InvitedUser::select('invited_users.name', 'invited_users.email')
+            ->join('boxes_with_people', 'invited_users.id', '=', 'boxes_with_people.invited_user_id')
+            ->where('boxes_with_people.box_id', $credentials['box_id'])->get();
         return response()->json(
             [
                 'status' => 'success',
                 'box' => $box,
                 'secret_santas' => $secret_santas,
                 'secret_santas_ward' => $secret_santas_ward,
-                'card' => $card
+                'card' => $card,
+                'invitedUsers' => $invitedUsers
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
