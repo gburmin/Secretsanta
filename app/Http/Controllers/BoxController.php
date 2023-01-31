@@ -90,6 +90,11 @@ class BoxController extends Controller
 
     public function join(Request $request)
     {
+        // возможно два варианта входящих url: 1)ссылка из письма api+/box/join/?name={name}&email={email}&id={box_id}
+        //2) присоединение к публичной коробке api+/box/join/?user_id={user_id}&id={box_id}
+        if ($request->user_id) {
+            $user = User::find($request->user_id);
+        }
         $user = User::where('email', $request->email)
             ->first();
         if (!$user) {
