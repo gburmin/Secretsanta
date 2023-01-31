@@ -94,9 +94,10 @@ class BoxController extends Controller
         //2) присоединение к публичной коробке api+/box/join/?user_id={user_id}&id={box_id}
         if ($request->user_id) {
             $user = User::find($request->user_id);
+        } else {
+            $user = User::where('email', $request->email)
+                ->first();
         }
-        $user = User::where('email', $request->email)
-            ->first();
         if (!$user) {
             $user = new User();
             $password = Str::random(10);
@@ -124,7 +125,12 @@ class BoxController extends Controller
                 'box_id' => $request->id,
                 'card_infos_id' => $cardInfo->id
             ]);
-            return view('welcome');
+            return response()->json(
+                [
+                    'status' => 'success',
+                    'user' => $user
+                ]
+            )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);;
         }
 
         return response()->json(
