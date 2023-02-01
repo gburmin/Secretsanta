@@ -227,24 +227,62 @@ class BoxController extends Controller
             ->select(['users.id', 'secret_santa_to_id', 'name', 'email'])
             ->where('boxes_with_people.box_id', $credentials['box_id'])
             ->get();
+
         $secret_santas_ward = DB::table('boxes_with_people')
             ->join('users', 'boxes_with_people.secret_santa_to_id', '=', 'users.id')
             ->select(['users.id', 'name', 'email'])
             ->where('boxes_with_people.box_id', $credentials['box_id'])
             ->get();
         $box = Box::where('id', $credentials['box_id'])->first();
-        $card = Card::where('box_id', $credentials['box_id'])->where('user_id', $credentials['user_id'])->first();
+        $card = Card::where('box_id', $credentials['box_id'])
+            ->where('user_id', $credentials['user_id'])
+            ->first();
         $invitedUsers = InvitedUser::select('invited_users.name', 'invited_users.email')
             ->join('boxes_with_people', 'invited_users.id', '=', 'boxes_with_people.invited_user_id')
             ->where('boxes_with_people.box_id', $credentials['box_id'])->get();
+
+        if ($secret_santas[0]->secret_santa_to_id) {
+            foreach ($secret_santas as $santa) {
+                // блок с добавлением телефона, статусом доставки/отправки подарков
+                $cardInfoId = Card::select('card_infos_id')
+                    ->where('user_id', $santa->id)
+                    ->where('box_id', $credentials['box_id'])
+                    ->first();
+                $cardInfo = CardInfo::find($cardInfoId->card_infos_id);
+                $santa->phone = $cardInfo->phone;
+                $santa->presentSent = $cardInfo->presentSent;
+                $santa->presentReceived = $cardInfo->presentReceived;
+                // блок с получением имени подопечного
+                $cardInfoId = Card::select('card_infos_id')
+                    ->where('user_id', $santa->secret_santa_to_id)
+                    ->where('box_id', $credentials['box_id'])
+                    ->first();
+                $cardInfo = CardInfo::find($cardInfoId->card_infos_id);
+                $santa->ward_name = $cardInfo->name;
+                // блок с получением id и имени тайного санты пользователя
+                $userSecretSanta = DB::table('boxes_with_people')
+                    ->where('secret_santa_to_id', $santa->id)
+                    ->where('box_id', $credentials['box_id'])
+                    ->first();
+                $cardInfoId = Card::select('card_infos_id')
+                    ->where('user_id', $userSecretSanta->user_id)
+                    ->where('box_id', $credentials['box_id'])
+                    ->first();
+                $cardInfo = CardInfo::find($cardInfoId->card_infos_id);
+                $santa->your_secret_santa_id = $userSecretSanta->user_id;
+                $santa->your_secret_santa_name = $cardInfo->name;
+            }
+        }
+
         return response()->json(
             [
                 'status' => 'success',
-                'box' => $box,
-                'secret_santas' => $secret_santas,
-                'secret_santas_ward' => $secret_santas_ward,
-                'card' => $card,
-                'invitedUsers' => $invitedUsers
+                // 'box' => $box,
+                // 'secret_santas' => $secret_santas,
+                // 'secret_santas_ward' => $secret_santas_ward,
+                // 'card' => $card,
+                // 'invitedUsers' => $invitedUsers,
+                'secret_santas' => $secret_santas
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
