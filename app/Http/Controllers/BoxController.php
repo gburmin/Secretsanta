@@ -27,21 +27,34 @@ class BoxController extends Controller
             'user_id' => $credentials['creator_id'],
             'box_id' => $box->id
         ]);
-        $user = User::find($credentials['creator_id']);
+
+        return response()->json(
+            [
+                'status' => 'success',
+                'box' => $box
+            ]
+        )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
+    public function createCard(Request $request)
+    {
+        $data = $request->getContent(); // получаем body запроса
+        $credentials  = json_decode($data, true); // переводим в ассоциативный массив
+        $user = User::find($credentials['user_id']);
         $cardInfo = CardInfo::create([
             'name' => $user->name,
             'email' => $user->email
         ]);
         $card = Card::create([
-            'user_id' => $credentials['creator_id'],
-            'box_id' => $box->id,
+            'user_id' => $credentials['user_id'],
+            'box_id' => $credentials['box_id'],
             'card_infos_id' => $cardInfo->id
         ]);
         return response()->json(
             [
                 'status' => 'success',
-                'box' => $box,
-                'card' => $card
+                'card' => $card,
+                'cardInfo' => $cardInfo
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
@@ -175,7 +188,12 @@ class BoxController extends Controller
             ->where('box_id', $credentials['box_id'])
             ->get();
         foreach ($users as $user) {
-            $users_id[] = $user->user_id;
+            $card = Card::where('box_id', $credentials['box_id'])
+                ->where('user_id', $user->user_id)
+                ->first();
+            if ($card) {
+                $users_id[] = $user->user_id;
+            }
         }
         $users_id[] = array_shift($users_id);
         DB::table('boxes_with_people')
@@ -277,12 +295,11 @@ class BoxController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                // 'box' => $box,
-                // 'secret_santas' => $secret_santas,
-                // 'secret_santas_ward' => $secret_santas_ward,
-                // 'card' => $card,
-                // 'invitedUsers' => $invitedUsers,
-                'secret_santas' => $secret_santas
+                'box' => $box,
+                'secret_santas' => $secret_santas,
+                'secret_santas_ward' => $secret_santas_ward,
+                'card' => $card,
+                'invitedUsers' => $invitedUsers,
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
