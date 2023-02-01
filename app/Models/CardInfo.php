@@ -15,6 +15,8 @@ class CardInfo extends Model
         'image',
         'phone',
         'wishlist',
-        'address'
+        'address',
+        'presentSent',
+        'presentReceived'
     ];
 }
