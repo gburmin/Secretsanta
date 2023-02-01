@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CardInfo;
+use App\Models\Card;
 
 class CardController extends Controller
 {
@@ -30,6 +31,23 @@ class CardController extends Controller
             [
                 'status' => 'success',
                 'card_info' => $card_info
+            ]
+        )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
+    public function addContactInfo(Request $request)
+    {
+        $data = $request->getContent(); // получаем body запроса
+        $credentials  = json_decode($data, true); // переводим в ассоциативный массив
+        $card = Card::find($credentials['card_id']);
+        $card_info_id = $card->card_infos_id;
+        $contactInfo = CardInfo::where('id', $card_info_id)->first();
+        $contactInfo->fill($credentials);
+        $contactInfo->save();
+        return response()->json(
+            [
+                'status' => 'success',
+                'cardInfo' => $contactInfo
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }

@@ -253,13 +253,16 @@ class BoxController extends Controller
     {
         $data = $request->getContent();
         $credentials = json_decode($data, true);
-        $allOtherBoxes = DB::table('boxes_with_people')
-            ->join('boxes', 'boxes_with_people.box_id', '=', 'boxes.id')
-            ->select('boxes.id', 'title', 'cover', 'email', 'isPublic', 'cost', 'max_people_in_box', 'draw_starts_at', 'creator_id')
-            ->whereNot('boxes_with_people.user_id', $credentials['user_id'])
-            ->where('boxes.isPublic', true)
-            ->groupBy('boxes.id', 'title', 'cover', 'email', 'isPublic', 'cost', 'max_people_in_box', 'draw_starts_at', 'creator_id')
-            ->get();
+        $publicBoxes = Box::where('isPublic', true)->get();
+        foreach ($publicBoxes as $box) {
+            $publicBox = DB::table('boxes_with_people')
+                ->where('box_id', $box->id)
+                ->where('user_id', $credentials['user_id'])
+                ->first();
+            if (!$publicBox) {
+                $allOtherBoxes[] = Box::find($box->id);
+            }
+        }
 
         return response()->json(
             [

@@ -49,3 +49,4 @@ Route::middleware('cors')->patch('/user/update/{user}', [ProfileController::clas
 Route::middleware('cors')->delete('user/delete/{user}', [ProfileController::class, 'delete']);
 
 Route::middleware('cors')->patch('/card/update', [CardController::class, 'update']);
+Route::middleware('cors')->patch('/card/addContactInfo', [CardController::class, 'addContactInfo']);

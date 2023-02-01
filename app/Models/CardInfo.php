@@ -12,6 +12,9 @@ class CardInfo extends Model
     protected $fillable = [
         'name',
         'email',
-        'image'
+        'image',
+        'phone',
+        'wishlist',
+        'address'
     ];
 }
