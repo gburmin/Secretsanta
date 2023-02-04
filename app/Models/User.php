@@ -24,6 +24,17 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'email_notify'
     ];
+    public function cards()
+    {
+        return $this->hasMany(Card::class, 'user_id')->firstOrCreate();
+    }
+    public function boxes()
+    {
+        return $this->hasMany(Box::class, 'creator_id')->firstOrCreate();
+    }
+
+    
+    
 
     /**
      * The attributes that should be hidden for serialization.

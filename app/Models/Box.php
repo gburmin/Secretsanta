@@ -18,11 +18,17 @@ class Box extends Model
         'cost',
         'max_people_in_box',
         'draw_starts_at',
-        'creator_id'
+        'creator_id',
+        'draw_done'
     ];
 
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id')->first();
     }
+     public function cards()
+    {
+        return $this->hasMany(Card::class, 'box_id')->get();
+    }
+    
 }

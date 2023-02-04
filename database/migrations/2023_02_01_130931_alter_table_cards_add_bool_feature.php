@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('cards', function (Blueprint $table) {
-            $table->foreignId('card_infos_id');
-            $table->foreign('card_infos_id')->references('id')->on('card_infos')->cascadeOnDelete();
+        Schema::table('cards', function (Blueprint $table){
+            $table->boolean('gift_sent')->default(false);
+            $table->boolean('gift_received')->default(false);
+
         });
     }
 
@@ -26,8 +27,10 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('cards', function (Blueprint $table) {
-            $table->dropColumn('card_infos_id');
+        Schema::table('cards', function (Blueprint $table){
+            $table->dropColumn('gift_sent');
+            $table->dropColumn('gift_received');
+
         });
     }
 };

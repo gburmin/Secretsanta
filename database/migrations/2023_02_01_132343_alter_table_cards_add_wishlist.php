@@ -14,8 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('cards', function (Blueprint $table) {
-            $table->foreignId('card_infos_id');
-            $table->foreign('card_infos_id')->references('id')->on('card_infos')->cascadeOnDelete();
+            $table->string('wish_list');
         });
     }
 
@@ -27,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('cards', function (Blueprint $table) {
-            $table->dropColumn('card_infos_id');
+            $table->dropColumn('wish_list');
         });
     }
 };
