@@ -50,3 +50,6 @@ Route::middleware('cors')->delete('user/delete/{user}', [ProfileController::clas
 
 Route::middleware('cors')->patch('/card/update', [CardController::class, 'update']);
 Route::middleware('cors')->patch('/card/addContactInfo', [CardController::class, 'addContactInfo']);
+
+//robert's routes added:  Notification
+Route::middleware('cors')->get('/card/notification/{id}', [\App\Http\Controllers\NotificationController::class, 'cardNotification']);
