@@ -267,8 +267,8 @@ class BoxController extends Controller
                 ->where('user_id', $santa->id)
                 ->where('box_id', $credentials['box_id'])
                 ->first();
-            $cardInfo = CardInfo::find($cardInfoId->card_infos_id);
-            if ($cardInfo) {
+            if ($cardInfoId) {
+                $cardInfo = CardInfo::find($cardInfoId->card_infos_id);
                 $santa->name = $cardInfo->name;
                 $santa->email = $cardInfo->email;
             }
