@@ -141,12 +141,7 @@ class BoxController extends Controller
                 'box_id' => $request->id,
                 'card_infos_id' => $cardInfo->id
             ]);
-            return response()->json(
-                [
-                    'status' => 'success',
-                    'user' => $user
-                ]
-            )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);;
+            return redirect('https://secret-santa-1.netlify.app/');
         }
 
         return response()->json(
@@ -267,6 +262,17 @@ class BoxController extends Controller
         $card = Card::where('box_id', $credentials['box_id'])
             ->where('user_id', $credentials['user_id'])
             ->first();
+        foreach ($secret_santas as $santa) {
+            $cardInfoId = Card::select('card_infos_id')
+                ->where('user_id', $santa->id)
+                ->where('box_id', $credentials['box_id'])
+                ->first();
+            $cardInfo = CardInfo::find($cardInfoId->card_infos_id);
+            if ($cardInfo) {
+                $santa->name = $cardInfo->name;
+                $santa->email = $cardInfo->email;
+            }
+        }
         $invitedUsers = InvitedUser::select('invited_users.name', 'invited_users.email')
             ->join('boxes_with_people', 'invited_users.id', '=', 'boxes_with_people.invited_user_id')
             ->where('boxes_with_people.box_id', $credentials['box_id'])->get();

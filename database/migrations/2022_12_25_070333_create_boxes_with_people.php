@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('boxes_with_people', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->unsigned();
+            $table->foreignId('user_id')->unsigned()->nullable();
             $table->foreignId('box_id')->unsigned();
             $table->foreign('user_id')
                 ->references('id')
