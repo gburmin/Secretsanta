@@ -12,7 +12,10 @@ class Card extends Model
     protected $fillable = [
         'user_id',
         'box_id',
-        'card_infos_id'
+        'card_infos_id',
+        'gift_sent',
+        'gift_received',
+        'wish_list'
     ];
 
     public function box()

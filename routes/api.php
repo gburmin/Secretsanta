@@ -51,8 +51,9 @@ Route::middleware('cors')->patch('/user/update/{user}', [ProfileController::clas
 Route::middleware('cors')->delete('user/delete/{user}', [ProfileController::class, 'delete']);
 
 Route::middleware('cors')->patch('/card/update', [CardController::class, 'update']);
+
 Route::middleware('cors')->patch('/card/addAdditionalInfo', [CardController::class, 'addAdditionalInfo']);
-Route::middleware('cors')->get('/card/notification/{id}', [NotificationController::class, 'cardNotification']);
+
 
 Route::middleware('cors')->get('/user/notifications/{user}', [NotificationController::class, 'show']);
 Route::middleware('cors')->get('/user/info/{user}', [NotificationController::class, 'userInfo']);

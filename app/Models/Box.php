@@ -18,7 +18,8 @@ class Box extends Model
         'cost',
         'max_people_in_box',
         'draw_starts_at',
-        'creator_id'
+        'creator_id',
+        'draw_done'
     ];
 
     public function creator()
