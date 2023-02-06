@@ -29,7 +29,11 @@ class ChatController extends Controller
         $messages = Message::where('card_id', $credentials['card_id'])
             ->where(function ($query) use ($credentials) {
                 $query->where('writer_id', $credentials['first_chatter'])
-                    ->orWhere('writer_id', $credentials['second_chatter']);
+                    ->where('receiver_id', $credentials['second_chatter']);
+            })
+            ->orWhere(function ($query) use ($credentials) {
+                $query->where('writer_id', $credentials['second_chatter'])
+                    ->where('receiver_id', $credentials['first_chatter']);
             })->get();
         return response()->json(
             [
