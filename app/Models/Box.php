@@ -25,4 +25,8 @@ class Box extends Model
     {
         return $this->belongsTo(User::class, 'creator_id')->first();
     }
+    public function cards()
+    {
+        return $this->hasMany(Card::class, 'box_id')->get();
+    }
 }

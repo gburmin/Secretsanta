@@ -7,11 +7,14 @@ use App\Models\User;
 use App\Models\Card;
 use App\Models\CardInfo;
 use App\Models\InvitedUser;
+use App\Models\Message;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
+
 
 class BoxController extends Controller
 {
@@ -201,6 +204,13 @@ class BoxController extends Controller
             ->whereNotNull('invited_user_id')
             ->delete();
         foreach ($users as $user) {
+            // уведомления о проведении жеребьевки
+            Notification::create([
+                'user_id' => $user->user_id,
+                'box_id' => $credentials['box_id'],
+                'text' => 'Жеребьевка проведена!'
+            ]);
+
             DB::table('boxes_with_people')
                 ->where('box_id', $credentials['box_id'])
                 ->where('user_id', $user->user_id)
@@ -211,6 +221,8 @@ class BoxController extends Controller
             ->select(['users.id', 'name', 'email'])
             ->where('boxes_with_people.box_id', $credentials['box_id'])
             ->get();
+
+
         return response()->json(
             [
                 'status' => 'success',

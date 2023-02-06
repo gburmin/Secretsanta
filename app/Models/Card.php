@@ -14,4 +14,13 @@ class Card extends Model
         'box_id',
         'card_infos_id'
     ];
+
+    public function box()
+    {
+        return $this->belongsTo(Box::class, 'box_id')->first();
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id')->first();
+    }
 }

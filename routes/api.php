@@ -9,6 +9,7 @@ use App\Http\Controllers\BoxController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,7 @@ Route::middleware('cors')->post('/box/draw', [BoxController::class, 'draw']);
 Route::middleware('cors')->post('/box/reverseDraw', [BoxController::class, 'reverseDraw']);
 Route::middleware('cors')->post('/box/info', [BoxController::class, 'info']);
 Route::middleware('cors')->post('/box/othersPublicBoxes', [BoxController::class, 'othersPublicBoxes']);
+Route::middleware('cors')->post('/box/createCard', [BoxController::class, 'createCard']);
 
 
 Route::middleware('cors')->post('/chat/send', [ChatController::class, 'sendMessage']);
@@ -49,4 +51,8 @@ Route::middleware('cors')->patch('/user/update/{user}', [ProfileController::clas
 Route::middleware('cors')->delete('user/delete/{user}', [ProfileController::class, 'delete']);
 
 Route::middleware('cors')->patch('/card/update', [CardController::class, 'update']);
-Route::middleware('cors')->patch('/card/addContactInfo', [CardController::class, 'addContactInfo']);
+Route::middleware('cors')->patch('/card/addAdditionalInfo', [CardController::class, 'addAdditionalInfo']);
+Route::middleware('cors')->get('/card/notification/{id}', [NotificationController::class, 'cardNotification']);
+
+Route::middleware('cors')->get('/user/notifications/{user}', [NotificationController::class, 'show']);
+Route::middleware('cors')->get('/user/info/{user}', [NotificationController::class, 'userInfo']);
