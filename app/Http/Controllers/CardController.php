@@ -148,4 +148,17 @@ class CardController extends Controller
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
+
+    public function delete(Card $card)
+    {
+        $cardInfo = CardInfo::where('id', $card->card_infos_id);
+        $cardInfo->delete();
+        $card->delete();
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'карточка успешно удалена'
+            ]
+        )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
 }

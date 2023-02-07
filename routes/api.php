@@ -29,6 +29,10 @@ use App\Http\Controllers\NotificationController;
 Route::middleware('cors')->post('/user/register', [UserRegisterController::class, 'register']);
 Route::middleware('cors')->post('/user/login', [UserLoginController::class, 'login']);
 Route::middleware('cors')->post('/user/restore', [UserRestoreController::class, 'restore']);
+Route::middleware('cors')->patch('/user/update/{user}', [ProfileController::class, 'update']);
+Route::middleware('cors')->delete('user/delete/{user}', [ProfileController::class, 'delete']);
+Route::middleware('cors')->get('/user/notifications/{user}', [NotificationController::class, 'show']);
+Route::middleware('cors')->get('/user/info/{user}', [NotificationController::class, 'userInfo']);
 
 
 Route::middleware('cors')->post('/box/create', [BoxController::class, 'create']);
@@ -47,13 +51,8 @@ Route::middleware('cors')->post('/box/createCard', [BoxController::class, 'creat
 Route::middleware('cors')->post('/chat/send', [ChatController::class, 'sendMessage']);
 Route::middleware('cors')->post('/chat/get', [ChatController::class, 'getAllMessages']);
 
-Route::middleware('cors')->patch('/user/update/{user}', [ProfileController::class, 'update']);
-Route::middleware('cors')->delete('user/delete/{user}', [ProfileController::class, 'delete']);
+
 
 Route::middleware('cors')->patch('/card/update', [CardController::class, 'update']);
-
 Route::middleware('cors')->patch('/card/addAdditionalInfo', [CardController::class, 'addAdditionalInfo']);
-
-
-Route::middleware('cors')->get('/user/notifications/{user}', [NotificationController::class, 'show']);
-Route::middleware('cors')->get('/user/info/{user}', [NotificationController::class, 'userInfo']);
+Route::middleware('cors')->delete('card/delete/{card}', [CardController::class, 'delete']);

@@ -30,6 +30,18 @@ class BoxController extends Controller
             'user_id' => $credentials['creator_id'],
             'box_id' => $box->id
         ]);
+        if ($box->isPublic) {
+            $user = User::find($credentials['creator_id']);
+            $cardInfo = CardInfo::create([
+                'name' => $user->name,
+                'email' => $user->email
+            ]);
+            Card::create([
+                'user_id' => $credentials['creator_id'],
+                'box_id' => $box->id,
+                'card_infos_id' => $cardInfo->id
+            ]);
+        }
 
         return response()->json(
             [
@@ -93,8 +105,8 @@ class BoxController extends Controller
         foreach ($credentials['emails'] as $email) {
             $InvitedUser = InvitedUser::create(['name' => $email['name'], 'email' => $email['email']]);
             DB::table('boxes_with_people')->insert(['invited_user_id' => $InvitedUser->id, 'box_id' => $email['id']]);
-            mail($email['email'], 'Приглашение в коробку для участия в тайном санте', 'Уважаемый ' . $email['name'] . '! Вам выслано приглашения для участия в тайном санте.Чтобы принять приглашение, нажмите на ссылку' . 'https://backsecsanta.alwaysdata.net/api/box/join?email=' . $email['email'] . '&name=' . $email['name']
-                . '&id=' . $email['id'] . '. Если вы не зарегистрированы на нашем сайте, то переход по ссылке создаст вам аккаунт!');
+            mail($email['email'], 'Приглашение в коробку для участия в тайном санте', 'Уважаемый ' . $email['name'] . '! Вам выслано приглашения для участия в игре "Тайный Санта". Чтобы подтвердить приглашение, перейдите по ссылке ' . 'https://backsecsanta.alwaysdata.net/api/box/join?email=' . $email['email'] . '&name=' . $email['name']
+                . '&id=' . $email['id'] . '. Если вы не зарегистрированы на нашем сайте, то переход по ссылке создаст вам аккаунт. После чего, вам придёт повторное письмо, содержащее временный пароль для авторизации на сайте. В дальнейшем, его можно изменить на странице профиля.');
         }
         return response()->json(
             [
