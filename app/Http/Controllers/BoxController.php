@@ -356,4 +356,17 @@ class BoxController extends Controller
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
+
+    public function onlyBoxInfo(Request $request)
+    {
+        $data = $request->getContent();
+        $credentials = json_decode($data, true);
+        $box = Box::find($credentials['box_id']);
+        return response()->json(
+            [
+                'status' => 'success',
+                'box' =>  $box
+            ]
+        )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
 }

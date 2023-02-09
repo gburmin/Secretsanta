@@ -46,6 +46,7 @@ Route::middleware('cors')->post('/box/reverseDraw', [BoxController::class, 'reve
 Route::middleware('cors')->post('/box/info', [BoxController::class, 'info']);
 Route::middleware('cors')->post('/box/othersPublicBoxes', [BoxController::class, 'othersPublicBoxes']);
 Route::middleware('cors')->post('/box/createCard', [BoxController::class, 'createCard']);
+Route::middleware('cors')->post('/box/onlyBoxInfo', [BoxController::class, 'onlyBoxInfo']);
 
 
 Route::middleware('cors')->post('/chat/send', [ChatController::class, 'sendMessage']);

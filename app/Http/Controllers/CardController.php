@@ -37,7 +37,6 @@ class CardController extends Controller
                 'card_info' => $card_info
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-    }
 
     protected function checkPresentReceived($card, $contactInfo)
     {
