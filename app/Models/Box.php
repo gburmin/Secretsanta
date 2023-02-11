@@ -21,7 +21,8 @@ class Box extends Model
         'creator_id',
         'draw_done',
         'isAnonym',
-        'currency'
+        'currency',
+        'isLimit'
     ];
 
     public function creator()

@@ -271,7 +271,8 @@ class BoxController extends Controller
             ->where('boxes_with_people.box_id', $credentials['box_id'])
             ->get();
         $box = Box::where('id', $credentials['box_id'])->first();
-        $card = Card::where('box_id', $credentials['box_id'])
+        $card = Card::join('card_infos', 'cards.card_infos_id', '=', 'card_infos.id')
+            ->where('box_id', $credentials['box_id'])
             ->where('user_id', $credentials['user_id'])
             ->first();
         foreach ($secret_santas as $santa) {
