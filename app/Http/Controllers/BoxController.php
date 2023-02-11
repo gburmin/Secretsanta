@@ -270,8 +270,20 @@ class BoxController extends Controller
             ->select(['users.id', 'name', 'email'])
             ->where('boxes_with_people.box_id', $credentials['box_id'])
             ->get();
+        foreach ($secret_santas_ward as $ward) {
+            $card = Card::join('card_infos', 'cards.card_infos_id', '=', 'card_infos.id')
+                ->select('cards.id', 'user_id', 'box_id', 'name', 'email', 'phone', 'wishlist', 'address')
+                ->where('box_id', $credentials['box_id'])
+                ->where('user_id', $ward->id)
+                ->first();
+            $ward->phone = $card->phone;
+            $ward->wishlist = $card->wishlist;
+            $ward->address = $card->address;
+        }
+
         $box = Box::where('id', $credentials['box_id'])->first();
         $card = Card::join('card_infos', 'cards.card_infos_id', '=', 'card_infos.id')
+            ->select('cards.id', 'user_id', 'box_id', 'name', 'email', 'image', 'phone', 'wishlist', 'address', 'presentSent', 'presentReceived')
             ->where('box_id', $credentials['box_id'])
             ->where('user_id', $credentials['user_id'])
             ->first();
@@ -284,6 +296,7 @@ class BoxController extends Controller
                 $cardInfo = CardInfo::find($cardInfoId->card_infos_id);
                 $santa->name = $cardInfo->name;
                 $santa->email = $cardInfo->email;
+                $santa->image = $cardInfo->image;
             }
         }
         $invitedUsers = InvitedUser::select('invited_users.name', 'invited_users.email')
