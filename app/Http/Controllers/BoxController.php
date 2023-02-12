@@ -58,7 +58,8 @@ class BoxController extends Controller
         $user = User::find($credentials['user_id']);
         $cardInfo = CardInfo::create([
             'name' => $user->name,
-            'email' => $user->email
+            'email' => $user->email,
+            'image' => $credentials['image']
         ]);
         $card = Card::create([
             'user_id' => $credentials['user_id'],
