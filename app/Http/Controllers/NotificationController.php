@@ -11,7 +11,7 @@ class NotificationController extends Controller
 {
     public function show(User $user)
     {
-        $notifications = Notification::select('box_id', 'text', 'created_at')
+        $notifications = Notification::select('id', 'box_id', 'text', 'created_at')
             ->where('user_id', $user->id)
             ->get();
 
@@ -29,7 +29,7 @@ class NotificationController extends Controller
 
     public function userInfo(User $user)
     {
-        $notifications = Notification::select('box_id', 'text', 'created_at')
+        $notifications = Notification::select('id', 'box_id', 'text', 'created_at')
             ->where('user_id', $user->id)
             ->get();
 
@@ -42,6 +42,17 @@ class NotificationController extends Controller
                 'status' => 'success',
                 'user' => $user,
                 'notifications' => $notifications
+            ]
+        )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
+    public function delete(Notification $notification)
+    {
+        $notification->delete();
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'уведомление успешно удалено'
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }

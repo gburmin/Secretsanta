@@ -57,3 +57,5 @@ Route::middleware('cors')->post('/chat/get', [ChatController::class, 'getAllMess
 Route::middleware('cors')->patch('/card/update', [CardController::class, 'update']);
 Route::middleware('cors')->patch('/card/addAdditionalInfo', [CardController::class, 'addAdditionalInfo']);
 Route::middleware('cors')->delete('card/delete/{card}', [CardController::class, 'delete']);
+
+Route::middleware('cors')->delete('notification/delete/{notification}', [NotificationController::class, 'delete']);

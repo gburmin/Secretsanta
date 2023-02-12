@@ -363,6 +363,7 @@ class BoxController extends Controller
         $data = $request->getContent();
         $credentials = json_decode($data, true);
         $publicBoxes = Box::where('isPublic', true)->get();
+        $allOtherBoxes = [];
         foreach ($publicBoxes as $box) {
             $publicBox = DB::table('boxes_with_people')
                 ->where('box_id', $box->id)
