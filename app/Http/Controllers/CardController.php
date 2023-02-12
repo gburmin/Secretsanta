@@ -37,8 +37,9 @@ class CardController extends Controller
                 'card_info' => $card_info
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
 
-    protected function checkPresentReceived($card, $contactInfo)
+    private function checkPresentReceived($card, $contactInfo)
     {
         if ($contactInfo->wasChanged('presentReceived')) {
             // уведомление должно прийти тайному санте юзера
@@ -49,18 +50,18 @@ class CardController extends Controller
             Notification::create([
                 'user_id' => $userSecretSanta->user_id,
                 'box_id' => $card->box_id,
-                'text' => 'Ваш подопечный получил ваш подарок'
+                'text' => 'Ваш подопечный получил ваш подарок!'
             ]);
             Message::create([
                 'writer_id' => $card->user_id,
                 'receiver_id' => $userSecretSanta->user_id,
                 'card_id' => $card->id,
-                'text' => 'Я получил ваш подарок!'
+                'text' => 'Ваш подопечный получил ваш подарок!'
             ]);
         };
     }
 
-    protected function checkPresentSent($card, $contactInfo)
+    private function checkPresentSent($card, $contactInfo)
     {
         if ($contactInfo->wasChanged('presentSent')) {
             // уведомление должно прийти подопечному юзера
@@ -71,18 +72,18 @@ class CardController extends Controller
             Notification::create([
                 'user_id' => $userSecretSanta->secret_santa_to_id,
                 'box_id' => $card->box_id,
-                'text' => 'Ваш тайный санта отправил вам подарок'
+                'text' => 'Ваш Санта отправил вам подарок!'
             ]);
             Message::create([
                 'writer_id' => $card->user_id,
                 'receiver_id' => $userSecretSanta->secret_santa_to_id,
                 'card_id' => $card->id,
-                'text' => 'Я отправил вам подарок!'
+                'text' => 'Ваш Санта отправил вам подарок!'
             ]);
         };
     }
 
-    protected function checkContactInfoChange($card, $contactInfo)
+    private function checkContactInfoChange($card, $contactInfo)
     {
         if ($contactInfo->wasChanged('address') || $contactInfo->wasChanged('phone')) {
             // уведомление должно прийти тайному санте юзера
@@ -93,17 +94,17 @@ class CardController extends Controller
             Notification::create([
                 'user_id' => $userSecretSanta->user_id,
                 'box_id' => $card->box_id,
-                'text' => 'Обновлена информация о контактах подопечного'
+                'text' => 'Ваш подопечный добавил контакты!'
             ]);
             Message::create([
                 'writer_id' => $card->user_id,
                 'receiver_id' => $userSecretSanta->user_id,
                 'card_id' => $card->id,
-                'text' => 'Обновлена информация о контактах подопечного!'
+                'text' => 'Ваш подопечный добавил контакты!'
             ]);
         };
     }
-    protected function checkWishlistChange($card, $contactInfo)
+    private function checkWishlistChange($card, $contactInfo)
     {
         if ($contactInfo->wasChanged('wishlist')) {
             // уведомление должно прийти тайному санте юзера
@@ -114,13 +115,13 @@ class CardController extends Controller
             Notification::create([
                 'user_id' => $userSecretSanta->user_id,
                 'box_id' => $card->box_id,
-                'text' => 'Обновлена информация о вишлисте подопечного'
+                'text' => 'Ваш подопечный обновил пожелания!'
             ]);
             Message::create([
                 'writer_id' => $card->user_id,
                 'receiver_id' => $userSecretSanta->user_id,
                 'card_id' => $card->id,
-                'text' => 'Обновлена информация о вишлисте подопечного!'
+                'text' => 'Ваш подопечный обновил пожелания!'
             ]);
         };
     }

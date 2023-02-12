@@ -106,7 +106,7 @@ class BoxController extends Controller
             $InvitedUser = InvitedUser::create(['name' => $email['name'], 'email' => $email['email']]);
             DB::table('boxes_with_people')->insert(['invited_user_id' => $InvitedUser->id, 'box_id' => $email['id']]);
             mail($email['email'], 'Приглашение в коробку для участия в тайном санте', 'Уважаемый ' . $email['name'] . '! Вам выслано приглашения для участия в игре "Тайный Санта". Чтобы подтвердить приглашение, перейдите по ссылке ' . 'https://backsecsanta.alwaysdata.net/api/box/join?email=' . $email['email'] . '&name=' . $email['name']
-                . '&id=' . $email['id'] . '. Если вы не зарегистрированы на нашем сайте, то переход по ссылке создаст вам аккаунт. После чего, вам придёт повторное письмо, содержащее временный пароль для авторизации на сайте. В дальнейшем, его можно изменить на странице профиля.');
+                . '&id=' . $email['id'] . "&isRedirect=1" . '. Если вы не зарегистрированы на нашем сайте, то переход по ссылке создаст вам аккаунт. После чего, вам придёт повторное письмо, содержащее временный пароль для авторизации на сайте. В дальнейшем, его можно изменить на странице профиля.');
         }
         return response()->json(
             [
@@ -153,7 +153,15 @@ class BoxController extends Controller
                 'box_id' => $request->id,
                 'card_infos_id' => $cardInfo->id
             ]);
-            return redirect('https://secret-santa-1.netlify.app/');
+            if ($request->isRedirect) {
+                return redirect('https://secret-santa-1.netlify.app/');
+            }
+            return response()->json(
+                [
+                    'status' => 'success',
+                    'message' => 'вы присоединились к этой коробке'
+                ]
+            )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
 
         return response()->json(
@@ -276,6 +284,8 @@ class BoxController extends Controller
                 ->where('box_id', $credentials['box_id'])
                 ->where('user_id', $ward->id)
                 ->first();
+            $ward->name = $card->name;
+            $ward->email = $card->email;
             $ward->phone = $card->phone;
             $ward->wishlist = $card->wishlist;
             $ward->address = $card->address;
