@@ -99,6 +99,7 @@ class BoxController extends Controller
             ]
         )->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
+
     public function sendInvites(Request $request)
     {
         $data = $request->getContent(); // получаем body запроса
@@ -146,7 +147,7 @@ class BoxController extends Controller
             ]);
             InvitedUser::where('email', $user->email)->delete();
             $cardInfo = CardInfo::create([
-                'name' => $user->name,
+                'name' => $request->name,
                 'email' => $user->email
             ]);
             Card::create([
@@ -299,12 +300,13 @@ class BoxController extends Controller
             ->where('user_id', $credentials['user_id'])
             ->first();
         foreach ($secret_santas as $santa) {
-            $cardInfoId = Card::select('card_infos_id')
+            $cardInfoId = Card::select('id', 'card_infos_id')
                 ->where('user_id', $santa->id)
                 ->where('box_id', $credentials['box_id'])
                 ->first();
             if ($cardInfoId) {
                 $cardInfo = CardInfo::find($cardInfoId->card_infos_id);
+                $santa->card_id = $cardInfoId->id;
                 $santa->name = $cardInfo->name;
                 $santa->email = $cardInfo->email;
                 $santa->image = $cardInfo->image;

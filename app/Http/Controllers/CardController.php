@@ -151,6 +151,15 @@ class CardController extends Controller
 
     public function delete(Card $card)
     {
+        $box_id = $card->box_id;
+        $user_id = $card->user_id;
+        $box = Box::find($box_id);
+        if ($box->creator_id != $user_id) {
+            DB::table('boxes_with_people')
+                ->where('user_id', $user_id)
+                ->where('box_id', $box_id)
+                ->delete();
+        }
         $cardInfo = CardInfo::where('id', $card->card_infos_id);
         $cardInfo->delete();
         $card->delete();
