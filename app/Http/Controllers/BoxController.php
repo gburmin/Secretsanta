@@ -256,6 +256,16 @@ class BoxController extends Controller
         DB::table('boxes_with_people')
             ->where('box_id', $credentials['box_id'])
             ->update(['secret_santa_to_id' => null]);
+        $users = DB::table('boxes_with_people')
+            ->where('box_id', $credentials['box_id'])
+            ->get();
+        foreach ($users as $user) {
+            $card = Card::where('user_id', $user->user_id)
+                ->where('box_id', $credentials['box_id'])
+                ->first();
+            Message::where('card_id', $card->id)
+                ->delete();
+        }
         return response()->json(
             [
                 'status' => 'success',
