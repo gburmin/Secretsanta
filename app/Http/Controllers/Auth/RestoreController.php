@@ -22,7 +22,7 @@ class RestoreController extends Controller
             'password' => Hash::make($password)
         ]);
         $user->save();
-        mail($email, 'Восстановление пароля', 'ваш пароль ' . $password, 'From: sender@example.com');
+        mail($email, 'Восстановление пароля', 'ваш пароль ' . $password, 'From: admin@backsecsanta.com');
         return response()->json([
             'status' => 'success',
             'message' => 'Пароль отправлен на почту ' . $email
